@@ -1,280 +1,127 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
-import Link from "next/link";
 import {
-  SidebarContent,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarSeparator,
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarInput,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarFooter,
-  useSidebar,
-} from "@/components/ui/sidebar";
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Checkbox } from "@/components/ui/checkbox";
+import type { Coupon } from "@/lib/types";
+import { Badge } from "@/components/ui/badge";
 import {
-  LayoutDashboard,
-  UserCog,
-  Users,
-  Car,
-  Blocks,
-  Search,
-  Settings,
-  Ticket,
-  Star,
-  ChevronDown,
-  LogOut,
-  User,
-  Award,
-  LifeBuoy,
-  Gavel,
-  Map,
-  Ban,
-  Clock,
-  AlertCircle,
-  Book,
-} from "lucide-react";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-
-const homeNavItems = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard },
-];
-
-const membersNavItems = [
-  { href: "/users", label: "Rider", icon: Users },
-];
-
-const rideBookingNavItems = [
-    { href: "/trips/live", label: "Live trip location", icon: Map },
-    { href: "/trips/cancellations", label: "Cancelation reasons", icon: Ban },
-    { href: "/trips/scheduled", label: "Scheduled rides", icon: Clock },
-];
-
-const servicesNavItems = [
-    { href: "/service-category", label: "Manage Service Category", icon: Blocks },
-    { href: "/vehicle-type", label: "Vehicle Type", icon: Car },
-    { href: "/feedback", label: "Ratings and Reviews", icon: Star },
-];
-
-const utilitiesNavItems = [
-    { href: "/settings", label: "Settings", icon: Settings },
-    { href: "/support", label: "Support", icon: LifeBuoy },
-];
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "../ui/button";
+import { MoreHorizontal, Eye, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "../ui/alert-dialog";
 
 
-export function SidebarNav() {
-  const pathname = usePathname();
-  const { state } = useSidebar();
-  const router = useRouter();
+export function CouponsTable({ coupons: initialCoupons }: { coupons: Coupon[] }) {
+    const [coupons, setCoupons] = useState(initialCoupons);
+    const [itemToDelete, setItemToDelete] = useState<string | null>(null);
+    const { toast } = useToast();
+    const router = useRouter();
 
-  const handleLogout = () => {
-    router.push('/login');
-  };
+
+    const handleDelete = () => {
+        if (itemToDelete) {
+          setCoupons(coupons.filter((coupon) => coupon.id !== itemToDelete));
+          toast({
+            title: 'Coupon Deleted',
+            description: `The coupon has been successfully deleted.`,
+          });
+          setItemToDelete(null);
+        }
+    };
 
 
   return (
-    <>
-      <SidebarHeader className="border-b">
-        <div className="flex h-12 items-center gap-2">
-            {state === 'expanded' ? (
-              <div className="flex flex-col">
-                <span className="font-albert text-3xl font-extrabold tracking-tight text-primary">EURO</span>
-              </div>
-            ) : (
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                <Car className="h-6 w-6" />
-              </div>
-            )}
-        </div>
-        <div className="relative mt-2 group-data-[collapsed]:hidden">
-            <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <SidebarInput placeholder="Search" className="pl-8" />
-        </div>
-      </SidebarHeader>
-      <SidebarContent>
-        <SidebarGroup>
-            <SidebarGroupLabel>Home</SidebarGroupLabel>
-            <SidebarMenu>
-            {homeNavItems.map((item) => (
-                <SidebarMenuItem key={item.href}>
-                <Link href={item.href}>
-                    <SidebarMenuButton
-                    as="a"
-                    isActive={
-                        item.href === "/"
-                        ? pathname === item.href
-                        : pathname.startsWith(item.href)
-                    }
-                    tooltip={item.label}
-                    >
-                    <item.icon />
-                    <span>{item.label}</span>
-                    </SidebarMenuButton>
-                </Link>
-                </SidebarMenuItem>
-            ))}
-            </SidebarMenu>
-        </SidebarGroup>
-        <SidebarGroup>
-            <SidebarGroupLabel>Members</SidebarGroupLabel>
-            <SidebarMenu>
-            {membersNavItems.map((item) => (
-                <SidebarMenuItem key={item.href}>
-                <Link href={item.href}>
-                    <SidebarMenuButton
-                    as="a"
-                    isActive={pathname.startsWith(item.href)}
-                    tooltip={item.label}
-                    >
-                    <item.icon />
-                    <span>{item.label}</span>
-                    </SidebarMenuButton>
-                </Link>
-                </SidebarMenuItem>
-            ))}
-             <Collapsible asChild>
-                <SidebarMenuItem>
-                  <CollapsibleTrigger asChild>
-                     <SidebarMenuButton
-                        as="div"
-                        isActive={pathname.startsWith("/drivers")}
-                        tooltip={"Drivers"}
-                        className="justify-between"
+     <>
+      <div className="rounded-lg border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[40px]">
+                <Checkbox />
+              </TableHead>
+              <TableHead>Promo Code</TableHead>
+              <TableHead>Discount</TableHead>
+              <TableHead>Validity</TableHead>
+              <TableHead>Promo Code Type</TableHead>
+              <TableHead>Usage Limit</TableHead>
+              <TableHead>Used</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="text-center">Action</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {coupons.map((coupon) => (
+              <TableRow key={coupon.id}>
+                <TableCell>
+                  <Checkbox />
+                </TableCell>
+                <TableCell className="font-medium">{coupon.promoCode}</TableCell>
+                <TableCell>{coupon.discount}</TableCell>
+                <TableCell>{coupon.validity}</TableCell>
+                <TableCell>{coupon.promoCodeType}</TableCell>
+                <TableCell>{coupon.usageLimit}</TableCell>
+                <TableCell>{coupon.used}</TableCell>
+                <TableCell>
+                  <Badge variant={coupon.status === "Active" ? "success" : "secondary"}>
+                    {coupon.status}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-center">
+                   <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="h-8 w-8 p-0">
+                        <span className="sr-only">Open menu</span>
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => router.push(`/coupons/${coupon.id}`)}>
+                        <Eye className="mr-2 h-4 w-4" />
+                        View
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => setItemToDelete(coupon.id)}
+                        className="text-red-600"
                       >
-                        <div className="flex items-center gap-3">
-                          <UserCog />
-                          <span className="group-data-[collapsed]:hidden">Drivers</span>
-                        </div>
-                        <ChevronDown className="h-4 w-4 transition-transform duration-200 group-data-[state=open]:rotate-180 group-data-[collapsed]:hidden" />
-                      </SidebarMenuButton>
-                  </CollapsibleTrigger>
-                  <CollapsibleContent asChild>
-                    <SidebarMenuSub>
-                        <SidebarMenuItem>
-                            <SidebarMenuSubButton href="/drivers" isActive={pathname === "/drivers"}>
-                                <User />
-                                <span>Manage Driver</span>
-                            </SidebarMenuSubButton>
-                        </SidebarMenuItem>
-                        <SidebarMenuItem>
-                            <SidebarMenuSubButton href="/drivers/vehicles" isActive={pathname === "/drivers/vehicles"}>
-                                <Car />
-                                <span>Manage Driver Vehicles</span>
-                            </SidebarMenuSubButton>
-                        </SidebarMenuItem>
-                        <SidebarMenuItem>
-                            <SidebarMenuSubButton href="/drivers/rewards" isActive={pathname === "/drivers/rewards"}>
-                                <Award />
-                                <span>Manage Reward</span>
-                            </SidebarMenuSubButton>
-                        </SidebarMenuItem>
-                    </SidebarMenuSub>
-                  </CollapsibleContent>
-                </SidebarMenuItem>
-              </Collapsible>
-            </SidebarMenu>
-        </SidebarGroup>
-        <SidebarGroup>
-            <SidebarGroupLabel>Ride &amp; Booking Management</SidebarGroupLabel>
-             <SidebarMenu>
-            {rideBookingNavItems.map((item) => (
-                <SidebarMenuItem key={item.href}>
-                <Link href={item.href}>
-                    <SidebarMenuButton
-                    as="a"
-                    isActive={pathname.startsWith(item.href)}
-                    tooltip={item.label}
-                    >
-                    <item.icon />
-                    <span>{item.label}</span>
-                    </SidebarMenuButton>
-                </Link>
-                </SidebarMenuItem>
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
+              </TableRow>
             ))}
-            </SidebarMenu>
-        </SidebarGroup>
-        <SidebarGroup>
-            <SidebarGroupLabel>Services</SidebarGroupLabel>
-            <SidebarMenu>
-            {servicesNavItems.map((item) => (
-                <SidebarMenuItem key={item.href}>
-                <Link href={item.href}>
-                    <SidebarMenuButton
-                    as="a"
-                    isActive={pathname.startsWith(item.href)}
-                    tooltip={item.label}
-                    >
-                    <item.icon />
-                    <span>{item.label}</span>
-                    </SidebarMenuButton>
-                </Link>
-                </SidebarMenuItem>
-            ))}
-            </SidebarMenu>
-        </SidebarGroup>
-        <SidebarSeparator />
-         <SidebarGroup>
-            <SidebarGroupLabel>Settings and Utilities</SidebarGroupLabel>
-            <SidebarMenu>
-            {utilitiesNavItems.map((item) => (
-                <SidebarMenuItem key={item.href}>
-                <Link href={item.href}>
-                    <SidebarMenuButton
-                    as="a"
-                    isActive={pathname.startsWith(item.href)}
-                    tooltip={item.label}
-                    >
-                    <item.icon />
-                    <span>{item.label}</span>
-                    </SidebarMenuButton>
-                </Link>
-                </SidebarMenuItem>
-            ))}
-            </SidebarMenu>
-        </SidebarGroup>
-      </SidebarContent>
-      <SidebarFooter>
-        <SidebarMenu>
-            <SidebarMenuItem>
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <SidebarMenuButton as="div" tooltip="Log Out" variant="destructive" className="bg-destructive text-destructive-foreground hover:bg-destructive/90 w-full">
-                      <LogOut />
-                      <span className="group-data-[collapsed]:hidden">Log out</span>
-                  </SidebarMenuButton>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Are you sure you want to log out?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      You will be returned to the login screen.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleLogout}>Log Out</AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
-    </>
+          </TableBody>
+        </Table>
+      </div>
+       <AlertDialog open={!!itemToDelete} onOpenChange={() => setItemToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the coupon.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete}>Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+     </>
   );
 }

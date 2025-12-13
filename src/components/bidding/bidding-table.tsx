@@ -1,280 +1,123 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
-import Link from "next/link";
+import { useState } from "react";
 import {
-  SidebarContent,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarSeparator,
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarInput,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarFooter,
-  useSidebar,
-} from "@/components/ui/sidebar";
-import {
-  LayoutDashboard,
-  UserCog,
-  Users,
-  Car,
-  Blocks,
-  Search,
-  Settings,
-  Ticket,
-  Star,
-  ChevronDown,
-  LogOut,
-  User,
-  Award,
-  LifeBuoy,
-  Gavel,
-  Map,
-  Ban,
-  Clock,
-  AlertCircle,
-  Book,
-} from "lucide-react";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
+import type { TripBid } from "@/lib/types";
+import { parseISO } from "date-fns";
+import { RelativeTime } from "../relative-time";
 
-const homeNavItems = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard },
-];
+const statusVariantMap: Record<TripBid["status"], "info" | "success" | "destructive"> = {
+  Pending: "info",
+  Accepted: "success",
+  Rejected: "destructive",
+};
 
-const membersNavItems = [
-  { href: "/users", label: "Rider", icon: Users },
-];
+export function BiddingTable({ tripBids: initialBids }: { tripBids: TripBid[] }) {
+  const [bids, setBids] = useState<TripBid[]>(initialBids);
+  const { toast } = useToast();
 
-const rideBookingNavItems = [
-    { href: "/trips/live", label: "Live trip location", icon: Map },
-    { href: "/trips/cancellations", label: "Cancelation reasons", icon: Ban },
-    { href: "/trips/scheduled", label: "Scheduled rides", icon: Clock },
-];
+  const handleBidAction = (bidId: string, tripId: string, newStatus: "Accepted" | "Rejected") => {
+    setBids(currentBids => {
+      // Find the bid being actioned
+      const actedBid = currentBids.find(b => b.id === bidId);
+      if (!actedBid) return currentBids;
+      
+      // Update the status of all bids for the same trip
+      const updatedBids = currentBids.map(bid => {
+        if (bid.tripId === tripId) {
+          if (bid.id === bidId) {
+            // This is the bid that was accepted
+            return { ...bid, status: newStatus };
+          } else {
+            // Other bids for the same trip are automatically rejected if one is accepted
+            return { ...bid, status: 'Rejected' };
+          }
+        }
+        return bid;
+      });
 
-const servicesNavItems = [
-    { href: "/service-category", label: "Manage Service Category", icon: Blocks },
-    { href: "/vehicle-type", label: "Vehicle Type", icon: Car },
-    { href: "/feedback", label: "Ratings and Reviews", icon: Star },
-];
+      toast({
+        title: `Bid ${newStatus}`,
+        description: `Bid from ${actedBid.driverName} has been ${newStatus.toLowerCase()}.`,
+      });
 
-const utilitiesNavItems = [
-    { href: "/settings", label: "Settings", icon: Settings },
-    { href: "/support", label: "Support", icon: LifeBuoy },
-];
-
-
-export function SidebarNav() {
-  const pathname = usePathname();
-  const { state } = useSidebar();
-  const router = useRouter();
-
-  const handleLogout = () => {
-    router.push('/login');
+      return updatedBids;
+    });
   };
 
-
   return (
-    <>
-      <SidebarHeader className="border-b">
-        <div className="flex h-12 items-center gap-2">
-            {state === 'expanded' ? (
-              <div className="flex flex-col">
-                <span className="font-albert text-3xl font-extrabold tracking-tight text-primary">EURO</span>
-              </div>
-            ) : (
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                <Car className="h-6 w-6" />
-              </div>
-            )}
-        </div>
-        <div className="relative mt-2 group-data-[collapsed]:hidden">
-            <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <SidebarInput placeholder="Search" className="pl-8" />
-        </div>
-      </SidebarHeader>
-      <SidebarContent>
-        <SidebarGroup>
-            <SidebarGroupLabel>Home</SidebarGroupLabel>
-            <SidebarMenu>
-            {homeNavItems.map((item) => (
-                <SidebarMenuItem key={item.href}>
-                <Link href={item.href}>
-                    <SidebarMenuButton
-                    as="a"
-                    isActive={
-                        item.href === "/"
-                        ? pathname === item.href
-                        : pathname.startsWith(item.href)
-                    }
-                    tooltip={item.label}
+    <div className="rounded-lg border">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Driver</TableHead>
+            <TableHead>User</TableHead>
+            <TableHead>Bid Amount</TableHead>
+            <TableHead>Bid Time</TableHead>
+            <TableHead className="text-center">Status</TableHead>
+            <TableHead className="text-center">Action</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {bids.map((bid) => (
+            <TableRow key={bid.id}>
+              <TableCell>
+                <div className="flex items-center gap-3">
+                  <Avatar className="h-9 w-9">
+                    <AvatarImage src={bid.driverAvatarUrl} alt={bid.driverName} />
+                    <AvatarFallback>{bid.driverName.charAt(0)}</AvatarFallback>
+                  </Avatar>
+                  <span className="font-medium">{bid.driverName}</span>
+                </div>
+              </TableCell>
+              <TableCell>{bid.userName}</TableCell>
+              <TableCell>${bid.bidAmount.toFixed(2)}</TableCell>
+              <TableCell>
+                <RelativeTime date={parseISO(bid.bidTime)} />
+              </TableCell>
+              <TableCell className="text-center">
+                <Badge variant={statusVariantMap[bid.status]}>
+                  {bid.status}
+                </Badge>
+              </TableCell>
+              <TableCell className="text-center">
+                {bid.status === "Pending" ? (
+                  <div className="flex justify-center gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="text-green-600 border-green-600 hover:bg-green-50 hover:text-green-700"
+                      onClick={() => handleBidAction(bid.id, bid.tripId, 'Accepted')}
                     >
-                    <item.icon />
-                    <span>{item.label}</span>
-                    </SidebarMenuButton>
-                </Link>
-                </SidebarMenuItem>
-            ))}
-            </SidebarMenu>
-        </SidebarGroup>
-        <SidebarGroup>
-            <SidebarGroupLabel>Members</SidebarGroupLabel>
-            <SidebarMenu>
-            {membersNavItems.map((item) => (
-                <SidebarMenuItem key={item.href}>
-                <Link href={item.href}>
-                    <SidebarMenuButton
-                    as="a"
-                    isActive={pathname.startsWith(item.href)}
-                    tooltip={item.label}
+                      Accept
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => handleBidAction(bid.id, bid.tripId, 'Rejected')}
                     >
-                    <item.icon />
-                    <span>{item.label}</span>
-                    </SidebarMenuButton>
-                </Link>
-                </SidebarMenuItem>
-            ))}
-             <Collapsible asChild>
-                <SidebarMenuItem>
-                  <CollapsibleTrigger asChild>
-                     <SidebarMenuButton
-                        as="div"
-                        isActive={pathname.startsWith("/drivers")}
-                        tooltip={"Drivers"}
-                        className="justify-between"
-                      >
-                        <div className="flex items-center gap-3">
-                          <UserCog />
-                          <span className="group-data-[collapsed]:hidden">Drivers</span>
-                        </div>
-                        <ChevronDown className="h-4 w-4 transition-transform duration-200 group-data-[state=open]:rotate-180 group-data-[collapsed]:hidden" />
-                      </SidebarMenuButton>
-                  </CollapsibleTrigger>
-                  <CollapsibleContent asChild>
-                    <SidebarMenuSub>
-                        <SidebarMenuItem>
-                            <SidebarMenuSubButton href="/drivers" isActive={pathname === "/drivers"}>
-                                <User />
-                                <span>Manage Driver</span>
-                            </SidebarMenuSubButton>
-                        </SidebarMenuItem>
-                        <SidebarMenuItem>
-                            <SidebarMenuSubButton href="/drivers/vehicles" isActive={pathname === "/drivers/vehicles"}>
-                                <Car />
-                                <span>Manage Driver Vehicles</span>
-                            </SidebarMenuSubButton>
-                        </SidebarMenuItem>
-                        <SidebarMenuItem>
-                            <SidebarMenuSubButton href="/drivers/rewards" isActive={pathname === "/drivers/rewards"}>
-                                <Award />
-                                <span>Manage Reward</span>
-                            </SidebarMenuSubButton>
-                        </SidebarMenuItem>
-                    </SidebarMenuSub>
-                  </CollapsibleContent>
-                </SidebarMenuItem>
-              </Collapsible>
-            </SidebarMenu>
-        </SidebarGroup>
-        <SidebarGroup>
-            <SidebarGroupLabel>Ride &amp; Booking Management</SidebarGroupLabel>
-             <SidebarMenu>
-            {rideBookingNavItems.map((item) => (
-                <SidebarMenuItem key={item.href}>
-                <Link href={item.href}>
-                    <SidebarMenuButton
-                    as="a"
-                    isActive={pathname.startsWith(item.href)}
-                    tooltip={item.label}
-                    >
-                    <item.icon />
-                    <span>{item.label}</span>
-                    </SidebarMenuButton>
-                </Link>
-                </SidebarMenuItem>
-            ))}
-            </SidebarMenu>
-        </SidebarGroup>
-        <SidebarGroup>
-            <SidebarGroupLabel>Services</SidebarGroupLabel>
-            <SidebarMenu>
-            {servicesNavItems.map((item) => (
-                <SidebarMenuItem key={item.href}>
-                <Link href={item.href}>
-                    <SidebarMenuButton
-                    as="a"
-                    isActive={pathname.startsWith(item.href)}
-                    tooltip={item.label}
-                    >
-                    <item.icon />
-                    <span>{item.label}</span>
-                    </SidebarMenuButton>
-                </Link>
-                </SidebarMenuItem>
-            ))}
-            </SidebarMenu>
-        </SidebarGroup>
-        <SidebarSeparator />
-         <SidebarGroup>
-            <SidebarGroupLabel>Settings and Utilities</SidebarGroupLabel>
-            <SidebarMenu>
-            {utilitiesNavItems.map((item) => (
-                <SidebarMenuItem key={item.href}>
-                <Link href={item.href}>
-                    <SidebarMenuButton
-                    as="a"
-                    isActive={pathname.startsWith(item.href)}
-                    tooltip={item.label}
-                    >
-                    <item.icon />
-                    <span>{item.label}</span>
-                    </SidebarMenuButton>
-                </Link>
-                </SidebarMenuItem>
-            ))}
-            </SidebarMenu>
-        </SidebarGroup>
-      </SidebarContent>
-      <SidebarFooter>
-        <SidebarMenu>
-            <SidebarMenuItem>
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <SidebarMenuButton as="div" tooltip="Log Out" variant="destructive" className="bg-destructive text-destructive-foreground hover:bg-destructive/90 w-full">
-                      <LogOut />
-                      <span className="group-data-[collapsed]:hidden">Log out</span>
-                  </SidebarMenuButton>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Are you sure you want to log out?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      You will be returned to the login screen.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleLogout}>Log Out</AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
-    </>
+                      Reject
+                    </Button>
+                  </div>
+                ) : (
+                  <span className="text-sm text-muted-foreground">-</span>
+                )}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 }
