@@ -1,4 +1,4 @@
-# Firebase Studio - Drive Admin
+# Firebase Studio - EURO
 
 This is a Next.js application built with Firebase Studio for managing a ride-sharing service.
 
