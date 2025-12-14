@@ -17,10 +17,10 @@ const albertSans = Albert_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Drive Admin",
+  title: "EURO",
   description: "Admin Panel for managing drivers, onboarding, and inquiries.",
   icons: {
-    icon: "/favicon.svg",
+    icon: "/favicon.ico",
   },
 };
 
