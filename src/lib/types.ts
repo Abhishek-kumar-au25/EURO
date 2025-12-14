@@ -128,4 +128,26 @@ export type WithdrawalRequest = {
   requestDate: string;
   status: 'Pending' | 'Approved' | 'Rejected';
 };
+
+export type Staff = {
+  id: string;
+  name: string;
+  email: string;
+  avatarUrl: string;
+  role: 'Admin' | 'Manager' | 'Support';
+  status: 'Active' | 'Inactive';
+  joinDate: string;
+  permissions: string[];
+};
+
+export type Transaction = {
+  id: string;
+  type: 'Ride Fare' | 'Withdrawal' | 'Bonus' | 'Platform Fee';
+  amount: number;
+  date: string;
+  status: 'Completed' | 'Pending' | 'Failed';
+  userName?: string;
+  driverName?: string;
+  rideId?: string;
+};
     

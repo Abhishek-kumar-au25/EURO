@@ -1,4 +1,4 @@
-import type { Driver, Feedback, User, Vehicle, VehicleType, Coupon, Ride, TripBid, WithdrawalRequest } from "@/lib/types";
+import type { Driver, Feedback, User, Vehicle, VehicleType, Coupon, Ride, TripBid, WithdrawalRequest, Staff, Transaction } from "@/lib/types";
 import { subDays, subMonths, format, subMinutes, addDays, formatISO } from "date-fns";
 
 const now = new Date();
@@ -114,6 +114,66 @@ export const drivers: Driver[] = [
     ],
     videoVerification: { url: "https://storage.googleapis.com/test-videos-123/production_id_4765898%20(1080p).mp4", status: "Pending" },
   },
+  {
+    id: "DRI007",
+    name: "Sarah Chen",
+    email: "sarah.chen@example.com",
+    phone: "(+1) 555-555-5555",
+    avatarUrl: "https://picsum.photos/seed/7/200/200",
+    status: "Approved",
+    joinDate: "2024-11-20T12:00:00.000Z",
+    timezone: "(UTC-08:00)",
+    walletBalance: 250.75,
+    vehicle: { make: "BMW", model: "X5", year: 2022, plate: "CALI-7" },
+    performance: { rating: 4.9, acceptanceRate: 98, completionRate: 99, trips: 50, earnings: 2500 },
+    documents: [],
+    videoVerification: { url: "https://storage.googleapis.com/test-videos-123/production_id_4765898%20(1080p).mp4", status: "Verified" },
+  },
+  {
+    id: "DRI008",
+    name: "James Smith",
+    email: "james.smith@example.com",
+    phone: "(+1) 555-111-2222",
+    avatarUrl: "https://picsum.photos/seed/8/200/200",
+    status: "Approved",
+    joinDate: "2025-01-15T12:00:00.000Z",
+    timezone: "(UTC-06:00)",
+    walletBalance: 320.50,
+    vehicle: { make: "Mercedes-Benz", model: "C-Class", year: 2023, plate: "TEX-8" },
+    performance: { rating: 4.8, acceptanceRate: 94, completionRate: 96, trips: 180, earnings: 7200 },
+    documents: [],
+    videoVerification: { url: "https://storage.googleapis.com/test-videos-123/production_id_4765898%20(1080p).mp4", status: "Verified" },
+  },
+  {
+    id: "DRI009",
+    name: "Patricia Garcia",
+    email: "patricia.garcia@example.com",
+    phone: "(+1) 555-333-4444",
+    avatarUrl: "https://picsum.photos/seed/9/200/200",
+    status: "Suspended",
+    joinDate: "2024-10-01T12:00:00.000Z",
+    timezone: "(UTC-05:00)",
+    walletBalance: 10.00,
+    vehicle: { make: "Audi", model: "A4", year: 2021, plate: "FL-9" },
+    performance: { rating: 4.5, acceptanceRate: 85, completionRate: 88, trips: 250, earnings: 9000 },
+    documents: [],
+    videoVerification: { url: "https://storage.googleapis.com/test-videos-123/production_id_4765898%20(1080p).mp4", status: "Verified" },
+  },
+  {
+    id: "DRI010",
+    name: "Robert Miller",
+    email: "robert.miller@example.com",
+    phone: "(+1) 555-888-9999",
+    avatarUrl: "https://picsum.photos/seed/10/200/200",
+    status: "Pending",
+    joinDate: "2025-03-01T12:00:00.000Z",
+    timezone: "(UTC-07:00)",
+    walletBalance: 0,
+    vehicle: { make: "Lexus", model: "RX", year: 2024, plate: "NEV-10" },
+    performance: { rating: 0, acceptanceRate: 0, completionRate: 0, trips: 0, earnings: 0 },
+    documents: [],
+    videoVerification: { url: "https://storage.googleapis.com/test-videos-123/production_id_4765898%20(1080p).mp4", status: "Pending" },
+  }
 ];
 
 export const feedback: Feedback[] = [
@@ -230,6 +290,71 @@ export const users: User[] = [
     walletBalance: -10.50,
     totalSpent: 95.00,
   },
+  {
+    id: "USR006",
+    name: "Frank White",
+    email: "frank.w@email.com",
+    avatarUrl: "https://picsum.photos/seed/106/200/200",
+    signupDate: subDays(now, 60).toISOString(),
+    lastTripDate: subDays(now, 5).toISOString(),
+    totalTrips: 40,
+    currency: "USD",
+    status: "Active",
+    walletBalance: 80.20,
+    totalSpent: 2200.00,
+  },
+  {
+    id: "USR007",
+    name: "Grace Green",
+    email: "grace.g@email.com",
+    avatarUrl: "https://picsum.photos/seed/107/200/200",
+    signupDate: subDays(now, 90).toISOString(),
+    lastTripDate: subDays(now, 12).toISOString(),
+    totalTrips: 60,
+    currency: "GBP",
+    status: "Active",
+    walletBalance: 120.00,
+    totalSpent: 3500.00,
+  },
+  {
+    id: "USR008",
+    name: "Henry Black",
+    email: "henry.b@email.com",
+    avatarUrl: "https://picsum.photos/seed/108/200/200",
+    signupDate: subDays(now, 20).toISOString(),
+    lastTripDate: subDays(now, 4).toISOString(),
+    totalTrips: 15,
+    currency: "USD",
+    status: "Active",
+    walletBalance: 30.00,
+    totalSpent: 500.00,
+  },
+  {
+    id: "USR009",
+    name: "Ivy Blue",
+    email: "ivy.b@email.com",
+    avatarUrl: "https://picsum.photos/seed/109/200/200",
+    signupDate: subDays(now, 300).toISOString(),
+    lastTripDate: subDays(now, 50).toISOString(),
+    totalTrips: 200,
+    currency: "EUR",
+    status: "Suspended",
+    walletBalance: 0,
+    totalSpent: 15000.00,
+  },
+  {
+    id: "USR010",
+    name: "Jack Grey",
+    email: "jack.g@email.com",
+    avatarUrl: "https://picsum.photos/seed/110/200/200",
+    signupDate: subDays(now, 2).toISOString(),
+    lastTripDate: subDays(now, 1).toISOString(),
+    totalTrips: 2,
+    currency: "USD",
+    status: "Active",
+    walletBalance: 10.00,
+    totalSpent: 50.00,
+  }
 ];
 
 export const rides: Ride[] = [
@@ -243,6 +368,9 @@ export const rides: Ride[] = [
   { id: "RIDE008", userName: "Diana Miller", driverName: "David J. Rodgers", pickupLocation: "Grand Mall", dropoffLocation: "Central Station", rideDate: formatISO(subDays(now, 5)), status: "Cancelled", fare: 12.50, cancelledBy: 'User', cancellationReason: "Found a cheaper alternative." },
   { id: "RIDE009", userName: "Alice Johnson", driverName: "Helen F. Swigert", pickupLocation: "University Campus", dropoffLocation: "Downtown Library", rideDate: formatISO(subDays(now, 6)), status: "Cancelled", fare: 9.00, cancelledBy: 'Driver', cancellationReason: "Vehicle mechanical issue." },
   { id: "RIDE010", userName: "Eve Davis", driverName: "Paul B. Peck", pickupLocation: "North Park", dropoffLocation: "South Beach", rideDate: formatISO(subDays(now, 7)), status: "Cancelled", fare: 65.00, cancelledBy: 'User', cancellationReason: "Ride taking too long to be accepted." },
+  { id: "RIDE011", userName: "Frank White", driverName: "Sarah Chen", pickupLocation: "West End", dropoffLocation: "East Side", rideDate: formatISO(subDays(now, 1)), status: "Completed", fare: 30.00 },
+  { id: "RIDE012", userName: "Grace Green", driverName: "James Smith", pickupLocation: "Tech Park", dropoffLocation: "Financial District", rideDate: formatISO(addDays(now, 3)), status: "Upcoming", fare: 40.00 },
+  { id: "RIDE013", userName: "Henry Black", driverName: "Patricia Garcia", pickupLocation: "Museum", dropoffLocation: "Gallery", rideDate: formatISO(subDays(now, 2)), status: "Completed", fare: 15.50 },
 ];
 
 export const tripBids: TripBid[] = [
@@ -307,4 +435,37 @@ export const withdrawalRequests: WithdrawalRequest[] = [
   { id: "WDR003", driverId: "DRI003", driverName: "Helen F. Swigert", driverAvatarUrl: "https://picsum.photos/seed/3/40/40", amount: 80.00, requestDate: subDays(now, 3).toISOString(), status: "Approved" },
   { id: "WDR004", driverId: "DRI001", driverName: "Paul B. Peck", driverAvatarUrl: "https://picsum.photos/seed/1/40/40", amount: 200.00, requestDate: subDays(now, 5).toISOString(), status: "Rejected" },
   { id: "WDR005", driverId: "DRI002", driverName: "David J. Rodgers", driverAvatarUrl: "https://picsum.photos/seed/2/40/40", amount: 50.00, requestDate: subDays(now, 7).toISOString(), status: "Approved" },
+];
+
+export const staff: Staff[] = [
+  { id: 'STAFF001', name: 'Olivia Smith', email: 'olivia.smith@euro.com', avatarUrl: 'https://picsum.photos/seed/st1/200/200', role: 'Admin', status: 'Active', joinDate: subDays(now, 300).toISOString(), permissions: ['All'] },
+  { id: 'STAFF002', name: 'Noah Brown', email: 'noah.brown@euro.com', avatarUrl: 'https://picsum.photos/seed/st2/200/200', role: 'Manager', status: 'Active', joinDate: subDays(now, 150).toISOString(), permissions: ['Manage Drivers', 'Manage Rides'] },
+  { id: 'STAFF003', name: 'Emma Wilson', email: 'emma.wilson@euro.com', avatarUrl: 'https://picsum.photos/seed/st3/200/200', role: 'Support', status: 'Active', joinDate: subDays(now, 90).toISOString(), permissions: ['View Rides', 'Respond to Feedback'] },
+  { id: 'STAFF004', name: 'Liam Taylor', email: 'liam.taylor@euro.com', avatarUrl: 'https://picsum.photos/seed/st4/200/200', role: 'Support', status: 'Inactive', joinDate: subDays(now, 60).toISOString(), permissions: ['View Rides'] },
+];
+
+export const getStaffById = (id: string): Staff | undefined => {
+    return staff.find(member => member.id === id);
+};
+
+export const revenueData = [
+    { month: format(subMonths(now, 5), "MMM"), revenue: 18000 },
+    { month: format(subMonths(now, 4), "MMM"), revenue: 22000 },
+    { month: format(subMonths(now, 3), "MMM"), revenue: 25000 },
+    { month: format(subMonths(now, 2), "MMM"), revenue: 27000 },
+    { month: format(subMonths(now, 1), "MMM"), revenue: 32000 },
+    { month: format(now, "MMM"), revenue: 35000 },
+];
+
+export const transactions: Transaction[] = [
+  { id: 'TRN001', type: 'Ride Fare', amount: 25.50, date: subDays(now, 1).toISOString(), status: 'Completed', userName: 'Alice Johnson', driverName: 'Paul B. Peck', rideId: 'RIDE001' },
+  { id: 'TRN002', type: 'Platform Fee', amount: -2.55, date: subDays(now, 1).toISOString(), status: 'Completed', rideId: 'RIDE001' },
+  { id: 'TRN003', type: 'Withdrawal', amount: -120.00, date: subDays(now, 1).toISOString(), status: 'Pending', driverName: 'Paul B. Peck' },
+  { id: 'TRN004', type: 'Ride Fare', amount: 18.00, date: now.toISOString(), status: 'Completed', userName: 'Bob Williams', driverName: 'David J. Rodgers', rideId: 'RIDE002' },
+  { id: 'TRN005', type: 'Platform Fee', amount: -1.80, date: now.toISOString(), status: 'Completed', rideId: 'RIDE002' },
+  { id: 'TRN006', type: 'Withdrawal', amount: -350.50, date: subDays(now, 2).toISOString(), status: 'Pending', driverName: 'David J. Rodgers' },
+  { id: 'TRN007', type: 'Ride Fare', amount: 22.00, date: subDays(now, 2).toISOString(), status: 'Completed', userName: 'Alice Johnson', driverName: 'David J. Rodgers', rideId: 'RIDE004' },
+  { id: 'TRN008', type: 'Platform Fee', amount: -2.20, date: subDays(now, 2).toISOString(), status: 'Completed', rideId: 'RIDE004' },
+  { id: 'TRN009', type: 'Withdrawal', amount: -80.00, date: subDays(now, 3).toISOString(), status: 'Completed', driverName: 'Helen F. Swigert' },
+  { id: 'TRN010', type: 'Bonus', amount: 50.00, date: subDays(now, 4).toISOString(), status: 'Completed', driverName: 'Paul B. Peck' },
 ];

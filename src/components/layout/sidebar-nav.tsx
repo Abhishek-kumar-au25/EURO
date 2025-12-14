@@ -100,6 +100,7 @@ export function SidebarNav() {
   const router = useRouter();
 
   const handleLogout = () => {
+    sessionStorage.removeItem('isAuthenticated');
     router.push('/login');
   };
 

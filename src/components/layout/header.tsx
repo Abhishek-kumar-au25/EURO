@@ -60,6 +60,7 @@ export function Header() {
 
 
   const handleLogout = () => {
+    sessionStorage.removeItem('isAuthenticated');
     router.push('/login');
   };
 

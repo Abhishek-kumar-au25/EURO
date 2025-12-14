@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -144,7 +145,7 @@ function MapView() {
   ];
 
   return (
-    <Card className="flex-1">
+    <Card className="flex-1 min-h-[400px] md:min-h-0">
       <CardContent className="p-0 relative h-full">
         <Image 
           src="https://images.unsplash.com/photo-1662578546948-a30badf89995?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxNYXAlMjBVbml0ZWQlMjBLaW5nZG9tfGVufDB8fHx8MTc2NTI2MzE3M3ww&ixlib=rb-4.1.0&q=80&w=1080" 
@@ -174,11 +175,11 @@ export default function DashboardPage() {
         <OverviewCards />
       </div>
       <div className="flex-1 grid gap-4 md:grid-cols-2 lg:grid-cols-7 items-stretch">
-        <div className="col-span-1 lg:col-span-4 space-y-4 flex flex-col">
+        <div className="col-span-1 md:col-span-2 lg:col-span-4 space-y-4 flex flex-col">
           <GodView />
           <MapView />
         </div>
-        <div className="col-span-1 lg:col-span-3 space-y-4 flex flex-col">
+        <div className="col-span-1 md:col-span-2 lg:col-span-3 space-y-4 flex flex-col">
           <TrafficByCountryChart />
           <TripStatistics />
         </div>

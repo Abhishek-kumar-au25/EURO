@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 
@@ -22,9 +22,17 @@ export default function LoginPage() {
   const [email, setEmail] = useState('admin@admin.com');
   const [password, setPassword] = useState('admin@123');
 
+  useEffect(() => {
+    // If user is already logged in, redirect to home
+    if (sessionStorage.getItem('isAuthenticated')) {
+      router.push('/');
+    }
+  }, [router]);
+
   const handleLogin = () => {
     // Static credentials check
     if (email === 'admin@admin.com' && password === 'admin@123') {
+      sessionStorage.setItem('isAuthenticated', 'true');
       router.push('/');
     } else {
       toast({

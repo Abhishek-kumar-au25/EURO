@@ -37,6 +37,8 @@
     --sidebar-accent-foreground: 222.2 47.4% 11.2%;
     --sidebar-border: 214.3 31.8% 91.4%;
     --sidebar-ring: 217 91% 60%;
+    --sidebar-scroll-bar: 210 40% 96.1%;
+    --sidebar-scroll-bar-thumb: 215.4 16.3% 46.9%;
   }
 
   .dark {
@@ -72,6 +74,8 @@
     --sidebar-accent-foreground: 0 0% 98%;
     --sidebar-border: 217.2 32.6% 17.5%;
     --sidebar-ring: 217 91% 60%;
+    --sidebar-scroll-bar: 217.2 32.6% 17.5%;
+    --sidebar-scroll-bar-thumb: 215 20% 65%;
   }
 }
 

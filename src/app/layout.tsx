@@ -1,8 +1,10 @@
+
 import type { Metadata } from "next";
 import { Inter, Space_Grotesk, Albert_Sans } from "next/font/google";
 import { MainLayout } from "@/components/layout/main-layout";
 import { Toaster } from "@/components/ui/toaster";
 import "./globals.css";
+import { AuthGuard } from "@/components/auth-guard";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const spaceGrotesk = Space_Grotesk({
@@ -17,6 +19,9 @@ const albertSans = Albert_Sans({
 export const metadata: Metadata = {
   title: "Drive Admin",
   description: "Admin Panel for managing drivers, onboarding, and inquiries.",
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({
@@ -28,8 +33,11 @@ export default function RootLayout({
     <html lang="en" className="dark" suppressHydrationWarning>
       <body
         className={`${inter.variable} ${spaceGrotesk.variable} ${albertSans.variable} font-body`}
+        suppressHydrationWarning
       >
-        <MainLayout>{children}</MainLayout>
+        <AuthGuard>
+          <MainLayout>{children}</MainLayout>
+        </AuthGuard>
         <Toaster />
       </body>
     </html>
